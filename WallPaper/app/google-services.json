@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1006253851631",
+    "firebase_url": "https://wallpaper-ant-man.firebaseio.com",
+    "project_id": "wallpaper-ant-man",
+    "storage_bucket": "wallpaper-ant-man.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006253851631:android:03faab43293eb27f",
+        "android_client_info": {
+          "package_name": "aviv.and.aviad.wallpaper"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1006253851631-964gobaskg0qcucjlcg6d8kgl9roja3v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApaoE5DqBn4jtxxIIJYVJeFVc0bEoclVY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="aviv.and.aviad.wallpaper.view.activity.MainActivity"
+    android:background="#111111">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:id="@+id/action_bar"
+        android:orientation="horizontal"
+        android:background="@color/action_bar"
+        android:gravity="center">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_back"
+            android:id="@+id/action_bar_back"
+            android:paddingLeft="7dp"
+            android:visibility="invisible"/>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:gravity="left"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textStyle="bold"
+            android:padding="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_weight="1"
+            android:textColor="@color/text_color"
+            />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/action_bar_forward"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ic_apps"
+            android:background="@android:color/transparent"
+            android:paddingRight="7dp"/>
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/grid_layout"
+        android:layout_below="@+id/action_bar">
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:background="@color/colorPrimary"
+            android:id="@+id/tests"
+            android:visibility="invisible"/>
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/wallpaper_grid"
+        android:visibility="visible"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:background="@drawable/shadow"/>
+
+    <com.tuyenmonkey.mkloader.MKLoader
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:mk_type="TwinFishesSpinner"
+    app:mk_color="#d50000"
+    android:layout_centerInParent="true"
+        android:id="@+id/pb_main"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
