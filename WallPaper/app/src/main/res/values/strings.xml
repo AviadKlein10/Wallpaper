@@ -2,5 +2,5 @@
     <string name="app_name">Ant Man and Wasp</string>
     <string name="menu_item_share">Share</string>
     <string name="menu_item_download">Download</string>
-    <string name="menu_item_wallpaper">Use As Wallpaper</string>
+    <string name="menu_item_wallpaper">Set As Wallpaper</string>
 </resources>

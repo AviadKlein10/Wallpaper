@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#111111"
+    android:background="@color/bg_color"
     android:animateLayoutChanges="true">
 
     <LinearLayout
@@ -30,7 +30,7 @@
             android:gravity="left"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textStyle="bold"
-            android:padding="10dp"
+            android:padding="16dp"
             android:layout_alignParentTop="true"
             android:layout_weight="1"
             android:textColor="@color/text_color"/>
@@ -63,46 +63,19 @@
         android:layout_gravity="bottom|end"
         app:fabGravity="bottom_end"
         app:fabMenu="@menu/fab_menu"
-        app:miniFabBackgroundTint="@color/fab_bg_color"
-        app:miniFabDrawableTint="@color/fab_btn_color"
+       app:fabBackgroundTint="@color/fab_color"
+        app:fabDrawableTint="@color/fab_icon_color"
+        app:miniFabBackgroundTint="@color/mini_fab_color"
+        app:miniFabDrawableTint="@color/mini_fab_icon_color"
         app:miniFabTitleTextColor="@color/fab_txt_color"/>
     </FrameLayout>
-    <ProgressBar
-        android:id="@+id/pbImageLoading"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_centerInParent="true"
-        android:background="@drawable/progress_bg"
-        android:indeterminate="false"
-        android:max="100"
-        android:progress="0"
-        android:progressDrawable="@drawable/progress"
-        android:visibility="gone" />
 
-    <TextView
-        android:id="@+id/tvDMWorking"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/pbImageLoading"
-        android:layout_centerInParent="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:text="Downloading..."
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/tvPercent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="0%"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:visibility="gone" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="10dp"
         android:background="@drawable/shadow"
-        android:layout_below="@id/action_bar"/>
+        android:layout_below="@id/action_bar"
+        android:id="@+id/shadow_layout_wallpaper"
+        android:orientation="horizontal"
+        android:alpha="0"/>
 </RelativeLayout>

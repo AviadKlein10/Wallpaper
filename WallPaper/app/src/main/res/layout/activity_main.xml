@@ -4,78 +4,87 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="aviv.and.aviad.wallpaper.view.activity.MainActivity"
-    android:background="#111111">
+    android:background="@color/bg_color"
+    tools:context="aviv.and.aviad.wallpaper.view.activity.MainActivity">
 
     <LinearLayout
+        android:id="@+id/action_bar"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:id="@+id/action_bar"
-        android:orientation="horizontal"
         android:background="@color/action_bar"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
+
         <ImageButton
+            android:id="@+id/action_bar_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_back"
-            android:id="@+id/action_bar_back"
             android:paddingLeft="7dp"
-            android:visibility="invisible"/>
+            android:src="@drawable/ic_back"
+            android:visibility="invisible" />
 
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:gravity="left"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textStyle="bold"
-            android:padding="10dp"
             android:layout_alignParentTop="true"
             android:layout_weight="1"
+            android:gravity="left"
+            android:padding="16dp"
+            android:text="@string/app_name"
+            android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/text_color"
-            />
+            android:textStyle="bold" />
 
         <ImageButton
+            android:id="@+id/action_bar_forward"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/action_bar_forward"
             android:layout_gravity="center_vertical"
-            android:src="@drawable/ic_apps"
             android:background="@android:color/transparent"
-            android:paddingRight="7dp"/>
+            android:paddingRight="7dp"
+            android:src="@drawable/ic_apps" />
     </LinearLayout>
+
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/grid_layout"
-        android:layout_below="@+id/action_bar">
-        <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:background="@color/colorPrimary"
-            android:id="@+id/tests"
-            android:visibility="invisible"/>
-    <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/wallpaper_grid"
-        android:visibility="visible"/>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="10dp"
-        android:background="@drawable/shadow"/>
+        android:layout_below="@+id/action_bar">
 
-    <com.tuyenmonkey.mkloader.MKLoader
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        app:mk_type="TwinFishesSpinner"
-    app:mk_color="#d50000"
-    android:layout_centerInParent="true"
-        android:id="@+id/pb_main"/>
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/wallpaper_grid"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@drawable/shadow" />
+
+        <io.saeid.fabloading.LoadingView
+            android:id="@+id/pb_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:scaleX="1.5"
+            android:scaleY="1.5"
+            app:mfl_duration="450"
+            app:mfl_onclickLoading="true"
+            app:mfl_repeat="4"
+            />
+        <ProgressBar
+            android:id="@+id/pb_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="invisible"
+            android:theme="@style/AppTheme.WhiteAccent"/>
     </RelativeLayout>
 
 </RelativeLayout>

@@ -5,51 +5,33 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.internal.NavigationMenu;
-import android.transition.TransitionListenerAdapter;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestBuilder;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.gif.GifDrawable;
-import com.bumptech.glide.load.resource.transcode.DrawableBytesTranscoder;
-import com.bumptech.glide.request.Request;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.BitmapImageViewTarget;
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.target.SizeReadyCallback;
-import com.bumptech.glide.request.target.Target;
-import com.bumptech.glide.request.transition.Transition;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
@@ -61,13 +43,12 @@ import java.util.List;
 
 import aviv.and.aviad.wallpaper.R;
 import aviv.and.aviad.wallpaper.model.AnimUtility;
+import aviv.and.aviad.wallpaper.model.DownloadService;
 import aviv.and.aviad.wallpaper.presenter.BaseView;
 import aviv.and.aviad.wallpaper.presenter.Presenter;
 import aviv.and.aviad.wallpaper.presenter.WallpaperPresenter;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
-
-import static io.realm.internal.SyncObjectServerFacade.getApplicationContext;
 
 /**
  * Created by Aviad on 17/04/2018.
@@ -81,6 +62,7 @@ public class WallpaperActivity extends BaseActivity implements BaseView,View.OnC
     private BroadcastReceiver mDLCompleteReceiver;
     private FabSpeedDial fabSpeedDial;
     private ImageView backBtn,largeImg;
+    private ProgressDialog mProgressDialog;
 
 
 
@@ -130,8 +112,29 @@ public class WallpaperActivity extends BaseActivity implements BaseView,View.OnC
 
             imgUrl = extras.getString("url");
             supportPostponeEnterTransition();
+            int width = Integer.parseInt(extras.getString("width"));
 
-            Glide.with(this)
+            Picasso.get()
+                    .load(imgUrl)
+                    .noFade()
+                    .centerCrop()
+                    .resize(width,0)
+                    .into(largeImg, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            supportStartPostponedEnterTransition();
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            supportStartPostponedEnterTransition();
+
+                        }
+
+                    });
+
+            initProgressView();
+            /*Glide.with(this)
                     .load(imgUrl)
                     .listener(new RequestListener<Drawable>() {
                         @Override
@@ -146,8 +149,19 @@ public class WallpaperActivity extends BaseActivity implements BaseView,View.OnC
                             return false;
                         }
                     })
-                    .into(largeImg);
+                    .into(largeImg);*/
         }
+    }
+
+    private void initProgressView() {
+
+
+// instantiate it within the onCreate method
+        mProgressDialog = new ProgressDialog(WallpaperActivity.this);
+        mProgressDialog.setMessage("A message");
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setCancelable(true);
 
     }
 
@@ -177,10 +191,12 @@ public class WallpaperActivity extends BaseActivity implements BaseView,View.OnC
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if (onPermissionCheck()) {
                                 /*((WallpaperPresenter) mPresenter).onDownloadPressed(imgUrl);*/
-                                downloadImage();
+                               // downloadImage();
+                                downloadImageUsingService();
                             }
                         } else {
-                            downloadImage();
+                           // downloadImage();
+                            downloadImageUsingService();
                         }
                         /*String imageUrl = "http://www.avajava.com/images/avajavalogo.jpg";
                         String destinationFile = "image.jpg";
@@ -203,15 +219,18 @@ public class WallpaperActivity extends BaseActivity implements BaseView,View.OnC
     }
 
     private void initFabView() {
-        AnimatorSet fadeInAnim = new AnimUtility.AnimUtilsBuilder().animateViewToFadeIn(fabSpeedDial,600).build();
-        fadeInAnim.addListener(new AnimatorListenerAdapter() {
+        final LinearLayout shadowLinearLayout = findViewById(R.id.shadow_layout_wallpaper);
+        AnimatorSet fadeInAnimFab = new AnimUtility.AnimUtilsBuilder().animateViewToFadeIn(fabSpeedDial,600).build();
+        AnimatorSet fadeInAnimShadow = new AnimUtility.AnimUtilsBuilder().animateViewToFadeIn(shadowLinearLayout,600).build();
+        fadeInAnimFab.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
                 super.onAnimationEnd(animation);
                 fabSpeedDial.setAlpha(1f);
+                shadowLinearLayout.setAlpha(1f);
             }
         });
-        new AnimUtility.AnimUtilsBuilder().syncBindSets(fadeInAnim).start();
+        new AnimUtility.AnimUtilsBuilder().bindSets(fadeInAnimFab,fadeInAnimShadow).start();
     }
 
     private void setBitmapAsWallpaper(Bitmap resource) {
@@ -294,9 +313,9 @@ public class WallpaperActivity extends BaseActivity implements BaseView,View.OnC
     }
 
     private void downloadImage() {
-        findViewById(R.id.tvDMWorking).setVisibility(View.VISIBLE);
-        findViewById(R.id.pbImageLoading).setVisibility(View.GONE);
-        findViewById(R.id.tvPercent).setVisibility(View.GONE);
+        findViewById(R.id.layout_download).setVisibility(View.VISIBLE);
+        /*findViewById(R.id.pbImageLoading).setVisibility(View.GONE);
+        findViewById(R.id.tvPercent).setVisibility(View.GONE);*/
         final TextView tvStatus = findViewById(R.id.tvDMWorking);
         Animation anim = AnimationUtils.loadAnimation(this, android.R.anim.fade_out);
         anim.setRepeatCount(Animation.INFINITE);
@@ -368,12 +387,12 @@ public class WallpaperActivity extends BaseActivity implements BaseView,View.OnC
                     }
 
                     String path = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-                    // tvStatus.setText("File download complete. Location: \n" + path);
-                    tvStatus.setText("File download complete");
+                     tvStatus.setText("File download complete. Location: \n" + path);
+                   // tvStatus.setText("File download complete");
                     Animation anim2 = AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out);
                     anim2.setDuration(700L);
                     tvStatus.startAnimation(anim2);
-                    tvStatus.setVisibility(View.INVISIBLE);
+                    findViewById(R.id.layout_download).setVisibility(View.INVISIBLE);
 
                 }
             }
@@ -397,5 +416,45 @@ public class WallpaperActivity extends BaseActivity implements BaseView,View.OnC
     public void onBackPressed() {
         fabSpeedDial.setAlpha(0f);
         super.onBackPressed();
+    }
+
+    private void downloadImageUsingService(){
+
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imgUrl));
+        request.setDescription("Download wallpaper");
+        request.setTitle(getResources().getString(R.string.app_name));
+// in order for this if to run, you must use the android 3.2 to compile your app
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            request.allowScanningByMediaScanner();
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        }
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "name-of-the-file.ext");
+
+// get download service and enqueue file
+        DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        manager.enqueue(request);
+
+       /* mProgressDialog.show();
+        Intent intent = new Intent(this, DownloadService.class);
+        intent.putExtra("url", imgUrl);
+        intent.putExtra("receiver", new DownloadReceiver(new Handler()));
+        startService(intent);*/
+    }
+    private class DownloadReceiver extends ResultReceiver {
+        public DownloadReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            super.onReceiveResult(resultCode, resultData);
+            if (resultCode == DownloadService.UPDATE_PROGRESS) {
+                int progress = resultData.getInt("progress");
+                mProgressDialog.setProgress(progress);
+                if (progress == 100) {
+                    mProgressDialog.dismiss();
+                }
+            }
+        }
     }
 }

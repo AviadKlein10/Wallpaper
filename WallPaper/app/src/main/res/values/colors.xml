@@ -5,11 +5,18 @@
     <color name="colorAccent">#FF4081</color>
     <color name="action_bar2">#3700B3</color>
     <color name="my_statusbar_color2">#6200EE</color>
-    <color name="action_bar">#6200EE</color>
-    <color name="my_statusbar_color">#3700B3</color>
-    <color name="fab">#03DAC5</color>
+    <color name="action_barL">#748eaa</color>
+    <color name="my_statusbar_colorL">#303c42</color>
     <color name="fab_txt_color">#121212</color>
-    <color name="fab_btn_color">#03DAC5</color>
-    <color name="fab_bg_color">#ffffff</color>
     <color name="text_color">#ffffff</color>
+    <color name="fab_color">#bb1f28</color>
+    <color name="fab_icon_color">#ffffff</color>
+    <color name="mini_fab_color">#bb1f28</color>
+    <color name="mini_fab_icon_color">#ffffff</color>
+    <color name="bg_color">#bb1f28</color>
+    <color name="bg_color_with_alpha">#aabb1f28</color>
+    <color name="transparent">#00212121</color>
+    <color name="progress_bar_color">#303c42</color>
+    <color name="action_bar">#212121</color>
+    <color name="my_statusbar_color">#212121</color>
 </resources>

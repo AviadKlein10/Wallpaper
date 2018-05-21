@@ -3,16 +3,15 @@ package aviv.and.aviad.wallpaper.model;
 import android.animation.AnimatorSet;
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
-import com.bumptech.glide.Glide;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -28,18 +27,21 @@ public class AdapterGrid extends RecyclerView.Adapter<AdapterGrid.ViewHolder> {
     private List<WallpaperObject> mData;
     private LayoutInflater mInflater;
     private ItemClickListener mClickListener;
-   // private ItemLongClickListener mLongClickListener;
-   // private List<Integer> selectedIds = new ArrayList<>();
+    private int desiredImageWidth;
+    private int lastPosition = -1;
+    // private ItemLongClickListener mLongClickListener;
+    // private List<Integer> selectedIds = new ArrayList<>();
 
 
-    public AdapterGrid(Context context, List<WallpaperObject> data) {
+    public AdapterGrid(Context context, List<WallpaperObject> data, int desiredImageWidth) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
+        this.desiredImageWidth = desiredImageWidth;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View view = mInflater.inflate(R.layout.item_wallpaper, parent, false);
+        View view = mInflater.inflate(R.layout.item_wallpaper, parent, false);
 
         /*view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,9 +56,7 @@ public class AdapterGrid extends RecyclerView.Adapter<AdapterGrid.ViewHolder> {
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
 
-
-        String tag = mData.get(position).getId()+"";
-        final WallpaperObject wallpaperObject = mData.get(position);
+        final String imgUrl = mData.get(position).getUrl();
         /*holder.imgGif.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,7 +65,21 @@ public class AdapterGrid extends RecyclerView.Adapter<AdapterGrid.ViewHolder> {
                 new AnimUtility.AnimUtilsBuilder().syncBindSets(viewToCenterAnim, viewScaleUp).start();
             }
         });*/
-        Glide.with(mInflater.getContext()).load(mData.get(position).getUrl()).into(holder.imgGif);
+        holder.progressBar.setVisibility(View.VISIBLE);
+        final ProgressBar progressBar = holder.progressBar;
+        Picasso.get().load(imgUrl).resize(desiredImageWidth, 0).centerCrop().into(holder.imgGif, new Callback() {
+            @Override
+            public void onSuccess() {
+                progressBar.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+        //holder.imgGif.setImageResource(R.drawable.placeholder);
+        //Glide.with(mInflater.getContext()).load(mData.get(position).getUrl()).into(holder.imgGif);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
             holder.imgGif.setTransitionName("img_trans");
@@ -73,26 +87,27 @@ public class AdapterGrid extends RecyclerView.Adapter<AdapterGrid.ViewHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = holder.getAdapterPosition();
-                mClickListener.onItemClick(holder.imgGif, position,wallpaperObject);
+                mClickListener.onItemClick(holder.imgGif,imgUrl);
             }
 
         });
-       /* holder.imgGif.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mClickListener.onItemClick(v,holder.getAdapterPosition(), wallpaperObject, holder.imgGif);
-            }
-        });*/
 
-        startItemAnimation(holder,position);
+       startItemAnimation(holder, position);
     }
 
     private void startItemAnimation(ViewHolder holder, int position) {
-        AnimatorSet fadeInAnim = new AnimUtility.AnimUtilsBuilder().animateViewToFadeIn(holder.imgGif,position*600).build();
-        AnimatorSet scaleAnim = new AnimUtility.AnimUtilsBuilder().scaleViewAnimation(holder.imgGif,position*650,holder.imgGif.getScaleX(),holder.imgGif.getScaleY()).build();
-        new AnimUtility.AnimUtilsBuilder().syncBindSets(fadeInAnim,scaleAnim).start();
+        if(position>lastPosition){
+            Log.d("position", position+"");
+            AnimatorSet fadeInAnim = new AnimUtility.AnimUtilsBuilder().animateViewToFadeIn(holder.imgGif, 350*position).build();
+            new AnimUtility.AnimUtilsBuilder().syncBindSets(fadeInAnim).start();
+           /* Animation animation = AnimationUtils.loadAnimation(mInflater.getContext(),
+                    R.anim.item_animation_list);
+            holder.itemView.startAnimation(animation);*/
+
+            lastPosition = position;
+        }
     }
+
 
     @Override
     public int getItemCount() {
@@ -110,21 +125,19 @@ public class AdapterGrid extends RecyclerView.Adapter<AdapterGrid.ViewHolder> {
 
     // stores and recycles views as they are scrolled off screen
     public class ViewHolder extends RecyclerView.ViewHolder {
-       // TextView txtTag;
+        // TextView txtTag;
         SquareImageView imgGif;
-        FrameLayout rootView;
+        ProgressBar progressBar;
 
         ViewHolder(View itemView) {
             super(itemView);
-           // txtTag = (TextView) itemView.findViewById(R.id.gif_tag);
+            // txtTag = (TextView) itemView.findViewById(R.id.gif_tag);
             imgGif = itemView.findViewById(R.id.img_wallpaper);
-
+            progressBar = itemView.findViewById(R.id.pb_item);
             // Apply the new width for ImageView programmatically
 
             // Set the scale type for ImageView image scaling
         }
-
-
 
 
     }
@@ -145,9 +158,7 @@ public class AdapterGrid extends RecyclerView.Adapter<AdapterGrid.ViewHolder> {
 
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
-        void onItemClick(View v, int view, WallpaperObject imageUrl, ImageView imageView);
-
-        void onItemClick(View view, int i, WallpaperObject item);
+        void onItemClick(View view, String imgUrl);
     }
 
 

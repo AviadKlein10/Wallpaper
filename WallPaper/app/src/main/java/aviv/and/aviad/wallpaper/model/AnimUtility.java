@@ -488,6 +488,18 @@ public class AnimUtility {
         }
 
 
+        public AnimUtilsBuilder animateViewToFadeOut(View view, int duration,long startDelay) {
+            ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(view, ALPHA_PROPERTY, 0f);
+            objectAnimator.setDuration(duration);
+            AnimatorSet animatorSet = new AnimatorSet();
+            animatorSet.play(objectAnimator);
+            animatorSet.setStartDelay(startDelay);
+            animatorSets.add(animatorSet);
+            return this;
+
+        }
+
+
         public AnimUtilsBuilder animateViewToFadeOut(View view, int duration) {
             ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(view, ALPHA_PROPERTY, 0f);
             objectAnimator.setDuration(duration);
