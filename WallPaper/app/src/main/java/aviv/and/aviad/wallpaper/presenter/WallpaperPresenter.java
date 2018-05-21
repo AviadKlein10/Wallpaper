@@ -1,9 +1,13 @@
 package aviv.and.aviad.wallpaper.presenter;
 
+import android.app.DownloadManager;
 import android.app.WallpaperManager;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.IOException;
@@ -11,6 +15,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import aviv.and.aviad.wallpaper.R;
 import aviv.and.aviad.wallpaper.view.activity.WallpaperActivity;
 
 import static io.realm.internal.SyncObjectServerFacade.getApplicationContext;
@@ -51,6 +56,24 @@ public class WallpaperPresenter extends Presenter<WallpaperActivity> implements 
             }
         }).start();
 
+    }
+
+    @Override
+    public void onDownloadPressed(Context context, String imgUrl) {
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(imgUrl));
+        request.setDescription("Download wallpaper");
+        request.setTitle(context.getResources().getString(R.string.app_name));
+// in order for this if to run, you must use the android 3.2 to compile your app
+        request.allowScanningByMediaScanner();
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        String imageName = context.getResources().getString(R.string.app_name)+ "." +imgUrl.substring(imgUrl.lastIndexOf(".") + 1).toLowerCase();
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, imageName);
+
+// get download service and enqueue file
+        DownloadManager manager = (DownloadManager)context.getSystemService(Context.DOWNLOAD_SERVICE);
+        if (manager != null) {
+            manager.enqueue(request);
+        }
     }
 
 
